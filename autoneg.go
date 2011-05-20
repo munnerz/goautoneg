@@ -122,7 +122,7 @@ func ParseAccept(header string) (accept []Accept) {
 			if token == "q" {
 				a.Q, _ = strconv.Atof32(sp[1])
 			} else {
-				a.Params[token] = a.Params[sp[1]]
+				a.Params[token] = strings.Trim(sp[1], " ")
 			}
 		}
 
