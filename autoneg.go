@@ -49,8 +49,8 @@ import (
 // Structure to represent a clause in an HTTP Accept Header
 type Accept struct {
 	Type, SubType string
-	Q float32
-	Params map[string]string
+	Q             float32
+	Params        map[string]string
 }
 
 // For internal use, so that we can use the sort interface
@@ -84,7 +84,7 @@ func (accept accept_slice) Swap(i, j int) {
 // Parse an Accept Header string returning a sorted list
 // of clauses
 func ParseAccept(header string) (accept []Accept) {
-	parts := strings.Split(header, ",", -1)
+	parts := strings.Split(header, ",")
 	accept = make([]Accept, 0, len(parts))
 	for _, part := range parts {
 		part := strings.Trim(part, " ")
@@ -93,10 +93,10 @@ func ParseAccept(header string) (accept []Accept) {
 		a.Params = make(map[string]string)
 		a.Q = 1.0
 
-		mrp := strings.Split(part, ";", -1)
+		mrp := strings.Split(part, ";")
 
 		media_range := mrp[0]
-		sp := strings.Split(media_range, "/", -1)
+		sp := strings.Split(media_range, "/")
 		a.Type = strings.Trim(sp[0], " ")
 
 		switch {
@@ -114,7 +114,7 @@ func ParseAccept(header string) (accept []Accept) {
 		}
 
 		for _, param := range mrp[1:] {
-			sp := strings.Split(param, "=", 2)
+			sp := strings.SplitN(param, "=", 2)
 			if len(sp) != 2 {
 				continue
 			}
@@ -140,7 +140,7 @@ func ParseAccept(header string) (accept []Accept) {
 func Negotiate(header string, alternatives []string) (content_type string) {
 	asp := make([][]string, 0, len(alternatives))
 	for _, ctype := range alternatives {
-		asp = append(asp, strings.Split(ctype, "/", 2))
+		asp = append(asp, strings.SplitN(ctype, "/", 2))
 	}
 	for _, clause := range ParseAccept(header) {
 		for i, ctsp := range asp {
