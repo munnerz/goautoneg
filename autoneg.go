@@ -41,15 +41,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package goautoneg
 
 import (
+	"sort"
 	"strconv"
 	"strings"
-	"sort"
 )
 
 // Structure to represent a clause in an HTTP Accept Header
 type Accept struct {
 	Type, SubType string
-	Q             float32
+	Q             float64
 	Params        map[string]string
 }
 
@@ -120,7 +120,7 @@ func ParseAccept(header string) (accept []Accept) {
 			}
 			token := strings.Trim(sp[0], " ")
 			if token == "q" {
-				a.Q, _ = strconv.Atof32(sp[1])
+				a.Q, _ = strconv.ParseFloat(sp[1], 32)
 			} else {
 				a.Params[token] = strings.Trim(sp[1], " ")
 			}
