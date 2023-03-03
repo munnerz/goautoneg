@@ -50,7 +50,6 @@ import (
 type Accept struct {
 	Type, SubType string
 	Q             float64
-	Params        map[string]string
 }
 
 // acceptSlice is defined to implement sort interface.
@@ -114,7 +113,6 @@ func ParseAccept(header string) acceptSlice {
 			continue
 		}
 
-		a.Params = make(map[string]string)
 		for len(remainingPart) > 0 {
 			sp, remainingPart = nextSplitElement(remainingPart, ";")
 			sp0, spRemaining = nextSplitElement(sp, "=")
@@ -129,8 +127,6 @@ func ParseAccept(header string) acceptSlice {
 			token := strings.TrimFunc(sp0, stringTrimSpaceCutset)
 			if token == "q" {
 				a.Q, _ = strconv.ParseFloat(sp1, 32)
-			} else {
-				a.Params[token] = strings.TrimFunc(sp1, stringTrimSpaceCutset)
 			}
 		}
 
