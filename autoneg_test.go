@@ -31,3 +31,21 @@ func TestParseAccept(t *testing.T) {
 		t.Errorf("got %s expected text/n3", content_type)
 	}
 }
+
+func BenchmarkParseAccept(b *testing.B) {
+	scenarios := []string{
+		"",
+		"application/json",
+		"application/json,text/plain",
+		"application/json;q=0.9,text/plain",
+		chrome,
+	}
+
+	for _, scenario := range scenarios {
+		b.Run(scenario, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_ = ParseAccept(scenario)
+			}
+		})
+	}
+}
