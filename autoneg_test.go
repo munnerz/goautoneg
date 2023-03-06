@@ -1,6 +1,7 @@
 package goautoneg
 
 import (
+	"math"
 	"testing"
 )
 
@@ -29,6 +30,56 @@ func TestNegotiate(t *testing.T) {
 	contentType = Negotiate(chrome, alternatives)
 	if contentType != "text/n3" {
 		t.Errorf("got %s expected text/n3", contentType)
+	}
+}
+
+func TestParseAccept(t *testing.T) {
+	actual := ParseAccept("application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8;otherParam=blah,image/png,*/*;q=0.5")
+	expected := []Accept{
+		{
+			Type:    "application",
+			SubType: "xml",
+			Q:       1,
+		},
+		{
+			Type:    "application",
+			SubType: "xhtml+xml",
+			Q:       1,
+		},
+		{
+			Type:    "image",
+			SubType: "png",
+			Q:       1,
+		},
+		{
+			Type:    "text",
+			SubType: "html",
+			Q:       0.9,
+		},
+		{
+			Type:    "text",
+			SubType: "plain",
+			Q:       0.8,
+		},
+		{
+			Type:    "*",
+			SubType: "*",
+			Q:       0.5,
+		},
+	}
+
+	if len(actual) != len(expected) {
+		t.Fatalf("expected %d entries, but got %d in %v", len(expected), len(actual), actual)
+	}
+
+	for i, expectedEntry := range expected {
+		actualEntry := actual[i]
+
+		qDiff := math.Abs(actualEntry.Q - expectedEntry.Q)
+
+		if actualEntry.Type != expectedEntry.Type || actualEntry.SubType != expectedEntry.SubType || qDiff > 0.0001 {
+			t.Fatalf("expected: %v\nactual: %v\nat position %d in %v", expectedEntry, actualEntry, i, actual)
+		}
 	}
 }
 
